@@ -1,27 +1,29 @@
 spring:
-  ###### Êı¾İÔ´ÅäÖÃ¡¾¿ªÊ¼¡¿ ######
+  ###### æ•°æ®æºé…ç½®ã€å¼€å§‹ã€‘ ######
   datasource:
-    url: jdbc:mysql://192.168.6.114:3306/starry?useUnicode=true&characterEncoding=utf8&useSSL=false
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: jdbc:mysql://127.0.0.1:3306/starry?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
-    hikari:
-      connection-timeout: 30000 #µÈ´ıÁ¬½Ó³Ø·ÖÅäÁ¬½ÓµÄ×î´óÊ±³¤£¨ºÁÃë£©£¬³¬¹ıÕâ¸öÊ±³¤»¹Ã»¿ÉÓÃµÄÁ¬½ÓÔò·¢ÉúSQLException£¬ È±Ê¡:30Ãë
-      idle-timeout: 600000 #Ò»¸öÁ¬½Óidle×´Ì¬µÄ×î´óÊ±³¤£¨ºÁÃë£©£¬³¬Ê±Ôò±»ÊÍ·Å£¨retired£©£¬È±Ê¡:10·ÖÖÓ
-      max-lifetime: 1800000 #Ò»¸öÁ¬½ÓµÄÉúÃüÊ±³¤£¨ºÁÃë£©£¬³¬Ê±¶øÇÒÃ»±»Ê¹ÓÃÔò±»ÊÍ·Å£¨retired£©£¬È±Ê¡:30·ÖÖÓ£¬½¨ÒéÉèÖÃ±ÈÊı¾İ¿â³¬Ê±Ê±³¤ÉÙ30ÃëÒÔÉÏ£¬²Î¿¼MySQL wait_timeout²ÎÊı£¨show variables like '%timeout%';£©
-      maximum-pool-size: 9 #Á¬½Ó³ØÖĞÔÊĞíµÄ×î´óÁ¬½ÓÊı¡£È±Ê¡Öµ£º10£»ÍÆ¼öµÄ¹«Ê½£º((core_count * 2) + effective_spindle_count)
-  ###### Êı¾İÔ´ÅäÖÃ¡¾½áÊø¡¿ ######
+#    hikari:
+#      connection-timeout: 30000 #ç­‰å¾…è¿æ¥æ± åˆ†é…è¿æ¥çš„æœ€å¤§æ—¶é•¿ï¼ˆæ¯«ç§’ï¼‰ï¼Œè¶…è¿‡è¿™ä¸ªæ—¶é•¿è¿˜æ²¡å¯ç”¨çš„è¿æ¥åˆ™å‘ç”ŸSQLExceptionï¼Œ ç¼ºçœ:30ç§’
+#      idle-timeout: 600000 #ä¸€ä¸ªè¿æ¥idleçŠ¶æ€çš„æœ€å¤§æ—¶é•¿ï¼ˆæ¯«ç§’ï¼‰ï¼Œè¶…æ—¶åˆ™è¢«é‡Šæ”¾ï¼ˆretiredï¼‰ï¼Œç¼ºçœ:10åˆ†é’Ÿ
+#      max-lifetime: 1800000 #ä¸€ä¸ªè¿æ¥çš„ç”Ÿå‘½æ—¶é•¿ï¼ˆæ¯«ç§’ï¼‰ï¼Œè¶…æ—¶è€Œä¸”æ²¡è¢«ä½¿ç”¨åˆ™è¢«é‡Šæ”¾ï¼ˆretiredï¼‰ï¼Œç¼ºçœ:30åˆ†é’Ÿï¼Œå»ºè®®è®¾ç½®æ¯”æ•°æ®åº“è¶…æ—¶æ—¶é•¿å°‘30ç§’ä»¥ä¸Šï¼Œå‚è€ƒMySQL wait_timeoutå‚æ•°ï¼ˆshow variables like '%timeout%';ï¼‰
+#      maximum-pool-size: 9 #è¿æ¥æ± ä¸­å…è®¸çš„æœ€å¤§è¿æ¥æ•°ã€‚ç¼ºçœå€¼ï¼š10ï¼›æ¨èçš„å…¬å¼ï¼š((core_count * 2) + effective_spindle_count)
+  ###### æ•°æ®æºé…ç½®ã€ç»“æŸã€‘ ######
 
-  ###### JPAÅäÖÃ¡¾¿ªÊ¼¡¿ ######
+  ###### JPAé…ç½®ã€å¼€å§‹ã€‘ ######
   jpa:
     generate-ddl: false
     show-sql: true
     hibernate:
-      ddl-auto: create # create¡¢create-drop¡¢update¡¢validate¡¢none
+      ddl-auto: update # createã€create-dropã€updateã€validateã€none
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect  # ·½ÑÔÉèÖÃ£¬»òÕßMySQL5InnoDBDialect
+        dialect: org.hibernate.dialect.MySQL5Dialect  # æ–¹è¨€è®¾ç½®ï¼Œæˆ–è€…MySQL5InnoDBDialect
 mybatis:
-  # ÖØÒªÅäÖÃ
-  type-aliases-package: com.study.springboot.mybatis.model
-  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.starry.domain.entity
+  mapper-locations: classpath:com.starry.domain.mapper/*.xml
+server:
+  port: 8008

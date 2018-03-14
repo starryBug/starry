@@ -11,18 +11,18 @@ import javax.persistence.Table;
 @Data
 @Table(name = "user")
 @Entity
-public class User {
+public class UserFile {
     @Id
     @GeneratedValue
     @Column(name = "id")
     private Long id;
-    @Column(name = "name")
-    private String name;
-    @Column(name = "gender")
-    private Byte gender;
-    @Column(name = "age")
-    private Integer age;
-    @Column(name = "nick_name")
-    private String nickName;
+    @Column(name = "uid")
+    private Long uid;
+    @Column(name = "url")
+    private String url;
+    @Column(name = "file_name")
+    private String fileName;
+    @Column(name = "file_size")
+    private Double fileSize;
 
 }
