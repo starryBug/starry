@@ -2,7 +2,7 @@ spring:
   ###### 数据源配置【开始】 ######
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://127.0.0.1:3306/starry?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    url: jdbc:mysql://192.168.116.128:3307/starry?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
@@ -27,3 +27,10 @@ mybatis:
   mapper-locations: classpath:com.starry.domain.mapper/*.xml
 server:
   port: 8008
+# ===================================================================
+# 分布式文件系统FDFS配置
+# ===================================================================
+fdfs:
+  soTimeout: 1500
+  connectTimeout: 600
+  trackerList[0]: "192.168.116.128:22122"

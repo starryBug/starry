@@ -1,6 +1,7 @@
 package com.starry.domain.entity;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
-@Table(name = "user")
+@Accessors(chain = true)
+@Table(name = "user_file")
 @Entity
 public class UserFile {
     @Id
