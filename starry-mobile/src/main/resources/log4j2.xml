@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，
+     你会看到log4j2内部各种详细输出。可以设置成OFF(关闭) 或 Error(只输出错误信息)。
+     30s 刷新此配置
+-->
+<configuration status="OFF" monitorInterval="30">
+
+    <!-- 日志文件目录、压缩文件目录、日志格式配置 -->
+    <properties>
+        <Property name="fileName">logs</Property>
+        <Property name="fileGz">logs/7z</Property>
+        <Property name="PID">????</Property>
+        <Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} | %clr{%5p} | %clr{${sys:PID}}{magenta} | %clr{%18.18t}{faint} | %clr{%-50.50c{1.}}{cyan} | %5L | %clr{%M}{magenta} | %msg%n%xwEx
+                                     <!--%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} | %clr{%5p} | %clr{%18.18t}{faint}                             | %clr{%-50.50c{1.}}{cyan} | %5L | %clr{%M}{magenta} | %msg%n%xwEx-->
+        </Property>
+    </properties>
+
+    <Appenders>
+        <!-- 输出控制台日志的配置 -->
+        <Console name="console" target="SYSTEM_OUT">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+        </Console>
+
+        <!-- 打印出所有的信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档 -->
+        <!--<RollingRandomAccessFile name="infoFile" fileName="${fileName}/web-info.log" immediateFlush="false"
+                                 filePattern="${fileGz}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.web-info.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB"/>
+            </Policies>
+
+            <Filters>
+                &lt;!&ndash; 只记录info和warn级别信息 &ndash;&gt;
+                <ThresholdFilter level="error" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            &lt;!&ndash; 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 &ndash;&gt;
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>-->
+
+        <!-- 存储所有error信息 -->
+        <!--<RollingRandomAccessFile name="errorFile" fileName="${fileName}/web-error.log" immediateFlush="false"
+                                 filePattern="${fileGz}/$${date:yyyy-MM}/%d{yyyy-MM-dd}-%i.web-error.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+
+            <Filters>
+                &lt;!&ndash; 只记录error级别信息 &ndash;&gt;
+                <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            &lt;!&ndash; 指定每天的最大压缩包个数，默认7个，超过了会覆盖之前的 &ndash;&gt;
+            <DefaultRolloverStrategy max="50"/>
+        </RollingRandomAccessFile>-->
+    </Appenders>
+
+    <!-- Mixed sync/async -->
+    <Loggers>
+        <!--<logger name="org.apache.http" level="warn"/>
+        <logger name="org.springframework" level="WARN"/>
+        <logger name="com.ibatis" level="DEBUG"/>
+        <logger name="com.ibatis.common.jdbc.SimpleDataSource" level="DEBUG"/>
+        <logger name="com.ibatis.common.jdbc.ScriptRunner" level="DEBUG"/>
+        <logger name="com.ibatis.sqlmap.engine.impl.SqlMapClientDelegate" level="DEBUG"/>
+        <logger name="java.sql.Connection" level="DEBUG" additivity="true"/>
+        <logger name="java.sql.Statement" level="DEBUG" additivity="true"/>
+        <logger name="java.sql.PreparedStatement" level="=debug,stdout" additivity="true"/>
+        <logger name="java.sql.ResultSet" level="DEBUG" additivity="true"/>
+        <logger name="org.apache" level="WARN"/>
+
+        &lt;!&ndash; 对包进行更详细的配置 &ndash;&gt;
+        &lt;!&ndash; additivity表示是否追加,防止重复,因为root已经接收过一次了 &ndash;&gt;
+        <logger name="com.my.blog.website.dao" level="DEBUG" additivity="true">
+            <appender-ref ref="db_log"/>
+        </logger>
+        <logger name="com.my.blog.website.controller" level="DEBUG" additivity="false">
+            <appender-ref ref="service_log"/>
+        </logger>
+        <logger name="com.my.blog.website.service" level="DEBUG" additivity="false">
+            <appender-ref ref="service_log"/>
+        </logger>-->
+
+        <!--<logger name="org.hibernate" level="INFO" additivity="true"/>-->
+        <AsyncRoot level="INFO" includeLocation="true">
+            <AppenderRef ref="console"/>
+            <!--<AppenderRef ref="infoFile"/>
+            <AppenderRef ref="errorFile"/>-->
+        </AsyncRoot>
+    </Loggers>
+
+</configuration>
