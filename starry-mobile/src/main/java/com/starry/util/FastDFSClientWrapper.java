@@ -1,16 +1,15 @@
 package com.starry.util;
 
-import com.github.tobato.fastdfs.conn.FdfsWebServer;
-import com.github.tobato.fastdfs.domain.StorePath;
-import com.github.tobato.fastdfs.exception.FdfsUnsupportStorePathException;
-import com.github.tobato.fastdfs.proto.storage.DownloadCallback;
-import com.github.tobato.fastdfs.service.AppendFileStorageClient;
-import com.github.tobato.fastdfs.service.FastFileStorageClient;
-import lombok.AllArgsConstructor;
+import com.starry.fastdfs.conn.FdfsWebServer;
+import com.starry.fastdfs.domain.StorePath;
+import com.starry.fastdfs.exception.FdfsUnsupportStorePathException;
+import com.starry.fastdfs.proto.storage.DownloadCallback;
+import com.starry.fastdfs.service.AppendFileStorageClient;
+import com.starry.fastdfs.service.FastFileStorageClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,9 @@ import java.nio.charset.Charset;
  * Created by lzt11 on 2018/2/18.
  */
 @Slf4j
-@AllArgsConstructor
 @Component
-@ConfigurationProperties(value = "classpath:fdfs.yml")
+@RequiredArgsConstructor
+//@ConfigurationProperties(value = "classpath:fdfs.yml")
 public class FastDFSClientWrapper {
 
     private final FastFileStorageClient storageClient;

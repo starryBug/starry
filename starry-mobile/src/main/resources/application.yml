@@ -2,7 +2,7 @@ spring:
   ###### 数据源配置【开始】 ######
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://192.168.116.128:3307/starry?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
+    url: jdbc:mysql://127.0.0.1:3306/starry?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
@@ -33,4 +33,12 @@ server:
 fdfs:
   soTimeout: 1500
   connectTimeout: 600
-  trackerList[0]: "192.168.116.128:22122"
+  trackerList[0]: "192.168.129.131:22122"
+fdfsthumbimage:
+  width: 200
+  height: 200
+fdfspool:
+    #从池中借出的对象的最大数目
+    maxTotal: 153
+    #获取连接时的最大等待毫秒数100
+    maxWaitMillis: 102

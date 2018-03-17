@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
@@ -22,7 +23,7 @@ import java.io.IOException;
  * @Date 2018-02-18 15:07:58
  */
 @Slf4j
-@RestController
+@Controller
 @AllArgsConstructor
 @RequestMapping("/file")
 public class FileManageController{
@@ -33,8 +34,8 @@ public class FileManageController{
     /**
      * 上传文件
      */
-    @RequestMapping(value = "/upload")
-    public Mono<String> upload(@RequestPart("file") MultipartFile attach, HttpServletRequest request) {
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public Mono<String> upload(@RequestPart("file") MultipartFile attach) {
         try {
             String path = fastDFSClientWrapper.uploadFile(attach);
             UserFile userFile = new UserFile().setFileName(attach.getName()).setFileSize(attach.getSize() / 1024.00).setId((long) 1).setUid((long) 1).setUrl(path);
