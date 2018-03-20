@@ -34,6 +34,7 @@ fdfs:
   soTimeout: 1500
   connectTimeout: 600
   trackerList[0]: "192.168.129.131:22122"
+  webServerUrl: "192.168.129.131/"
 fdfsthumbimage:
   width: 200
   height: 200

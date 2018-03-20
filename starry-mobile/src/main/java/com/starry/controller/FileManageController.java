@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import reactor.core.publisher.Mono;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 
@@ -35,15 +33,15 @@ public class FileManageController{
      * 上传文件
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public Mono<String> upload(@RequestPart("file") MultipartFile attach) {
+    public String upload(MultipartFile attach) {
         try {
             String path = fastDFSClientWrapper.uploadFile(attach);
-            UserFile userFile = new UserFile().setFileName(attach.getName()).setFileSize(attach.getSize() / 1024.00).setId((long) 1).setUid((long) 1).setUrl(path);
+            UserFile userFile = new UserFile().setFileName(attach.getOriginalFilename()).setFileSize(attach.getSize() / 1024.00).setId((long) 1).setUid((long) 1).setUrl(path);
             userFileJPA.save(userFile);
         }catch (IOException e){
             log.error("上传文件出错：" + ExceptionUtils.getMessage(e));
         }
-        return Mono.just("SUCCESS");
+        return "SUCCESS";
     }
     /**
      * 下载文件
