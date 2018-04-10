@@ -45,10 +45,13 @@ public class FileManageController{
             String path = fastDFSClientWrapper.uploadFile(attach);
 //            UserFile userFile = new UserFile().setFileName(attach.getOriginalFilename()).setFileSize(attach.getSize() / 1024.00).setId((long) 1).setUrl(path);
 //            userFileJPA.save(userFile);
-            UserFile userFile = new UserFile().setFileName(attach.getOriginalFilename()).setFileSize(attach.getSize() / 1024.00).setUrl(path);
+            UserFile userFile = new UserFile();
+            userFile.setFileName(attach.getOriginalFilename());
+            userFile.setFileSize(attach.getSize() / 1024.00);
+            userFile.setUrl(path);
             userFileService.saveUserFile(userFile);
         }catch (Exception e){
-            log.error("上传文件出错：" + ExceptionUtils.getMessage(e));
+//            log.error("上传文件出错：" + ExceptionUtils.getMessage(e));
         }finally {
             return Mono.just("SUCCESS");
         }

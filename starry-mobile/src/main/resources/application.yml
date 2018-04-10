@@ -1,16 +1,16 @@
 spring:
   ###### 数据源配置【开始】 ######
   datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
+#    type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://127.0.0.1:3306/starry?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8
     username: root
     password: root
     driver-class-name: com.mysql.jdbc.Driver
-#    hikari:
-#      connection-timeout: 30000 #等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒
-#      idle-timeout: 600000 #一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟
-#      max-lifetime: 1800000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上，参考MySQL wait_timeout参数（show variables like '%timeout%';）
-#      maximum-pool-size: 9 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
+    hikari:
+      connection-timeout: 30000 #等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 缺省:30秒
+      idle-timeout: 600000 #一个连接idle状态的最大时长（毫秒），超时则被释放（retired），缺省:10分钟
+      max-lifetime: 1800000 #一个连接的生命时长（毫秒），超时而且没被使用则被释放（retired），缺省:30分钟，建议设置比数据库超时时长少30秒以上，参考MySQL wait_timeout参数（show variables like '%timeout%';）
+      maximum-pool-size: 9 #连接池中允许的最大连接数。缺省值：10；推荐的公式：((core_count * 2) + effective_spindle_count)
   ###### 数据源配置【结束】 ######
 
   ###### JPA配置【开始】 ######
@@ -22,12 +22,19 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect  # 方言设置，或者MySQL5InnoDBDialect
-  data:
-    elasticsearch:
-      repositories:
-        enabled: true
-      cluster-nodes: 192.168.129.131:9300
-      cluster-name: docker-cluster #默认 9300 是 Java 客户端的端口。9200 是支持 Restful HTTP 的接口。
+#  data:
+#    elasticsearch:
+#      repositories:
+#        enabled: true
+#      cluster-nodes: 192.168.129.131:9300 #默认 9300 是 Java 客户端的端口。9200 是支持 Restful HTTP 的接口。
+#      cluster-name: docker-cluster
+  elasticsearch: #jest 相关配置
+    jest:
+      multi-threaded: true
+      uris: http://192.168.129.131:9200
+      read-timeout: 5s
+      connection-timeout: 5s
+
 mybatis:
   type-aliases-package: com.starry.domain.entity
   mapper-locations: classpath:com.starry.domain.mapper/*.xml

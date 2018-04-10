@@ -1,9 +1,9 @@
 package com.starry.domain.entity;
 
+import com.starry.elasticsearch.domain.BaseElasticSearchEntity;
+import io.searchbox.annotations.JestId;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +16,11 @@ import java.io.Serializable;
 @Accessors(chain = true)
 @Table(name = "user_file")
 @Entity
-public class UserFile implements Serializable{
+public class UserFile extends BaseElasticSearchEntity implements Serializable{
     @Id
     @GeneratedValue
     @Column(name = "id")
+    @JestId
     private Long id;
     @Column(name = "uid")
     private Long uid;
