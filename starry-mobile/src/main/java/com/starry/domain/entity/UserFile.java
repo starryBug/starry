@@ -1,5 +1,6 @@
 package com.starry.domain.entity;
 
+import com.starry.elasticsearch.annotation.JestQueryField;
 import com.starry.elasticsearch.domain.BaseElasticSearchEntity;
 import io.searchbox.annotations.JestId;
 import lombok.Data;
@@ -27,6 +28,7 @@ public class UserFile extends BaseElasticSearchEntity implements Serializable{
     @Column(name = "url")
     private String url;
     @Column(name = "file_name")
+    @JestQueryField
     private String fileName;
     @Column(name = "file_size")
     private Double fileSize;

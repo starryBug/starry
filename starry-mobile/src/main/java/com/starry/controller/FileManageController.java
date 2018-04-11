@@ -61,10 +61,10 @@ public class FileManageController{
      */
     @RequestMapping(value = "/es/list", method = RequestMethod.GET)
     @ResponseBody
-    public Mono<List> findFileList(@PathVariable("fileName") String fileName) {
+    public Mono<List> findFileList() {
         List<UserFile> list = null;
         try {
-            list = userFileService.findByFileName(fileName);
+            list = userFileService.findByFileName("支付过期设置代码.png");
         }catch (Exception e){
             list = Collections.emptyList();
         }
