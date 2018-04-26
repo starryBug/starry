@@ -1,5 +1,4 @@
 package com.starry.service.impl;
-import com.alibaba.fastjson.JSON;
 import com.starry.domain.entity.UserFile;
 import com.starry.repository.UserFileRepository;
 import com.starry.service.JestService;
@@ -34,8 +33,14 @@ public class UserFileService implements IUserFileService{
     }
 
     @Override
-    public List<UserFile> findByFileName(String fileName){
-        return jestService.search(new UserFile().setFileName(fileName));
+    public List<UserFile> findByKey(String qryKey){
+        UserFile userFile = new UserFile();
+        userFile.setQuery(qryKey);
+        return jestService.search(UserFile.class, userFile);
+    }
+    @Override
+    public List<UserFile> findByUserFile(UserFile userFile){
+        return jestService.search(UserFile.class, userFile);
     }
 
 }

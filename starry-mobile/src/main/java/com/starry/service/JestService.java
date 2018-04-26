@@ -1,7 +1,7 @@
 package com.starry.service;
 
-import com.starry.domain.entity.UserFile;
-import com.starry.elasticsearch.annotation.JestQueryField;
+import com.starry.elasticsearch.annotation.JestExactQueryField;
+import com.starry.elasticsearch.annotation.JestFuzzyQueryField;
 import com.starry.elasticsearch.domain.BaseElasticSearchEntity;
 import com.starry.util.LambdaUtil;
 import io.searchbox.client.JestClient;
@@ -21,17 +21,22 @@ import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.mapping.GetMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.PHRASE;
+import static org.elasticsearch.index.query.Operator.AND;
 
+//@Slf4j
 @Component
 public class JestService {
 
@@ -203,33 +208,52 @@ public class JestService {
      * @param qryObj 条件列表
      * @return 结果集
      */
-    public List<UserFile> search(UserFile qryObj) {
+    public <T extends BaseElasticSearchEntity> List<T> search(Class<T> clazz, T qryObj) {
         try {
-            SearchResult result = jestClient.execute(new Search.Builder(buildSearch(qryObj).toString())
+            SearchResult result = jestClient.execute(new Search.Builder(buildSearch(clazz, qryObj).toString())
                     // multiple index or types can be added.
                     .addIndex(qryObj.getElasticIndexName())
                     .addType(qryObj.getElasticTypeName())
                     .build());
-            return result.getSourceAsObjectList(UserFile.class, false);
-
+            return result.getSourceAsObjectList(clazz, false);
         } catch (Exception e) {
-            throw new RuntimeException("search exception", e);
+//            log.error(ExceptionUtils.getMessage(e));
+            e.printStackTrace();
         }
+        return null;
     }
 
-    private SearchSourceBuilder buildSearch(UserFile qryObj) throws Exception{
+    private <T extends BaseElasticSearchEntity> SearchSourceBuilder buildSearch(Class<T> clazz, T qryObj) throws Exception{
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        asList(qryObj.getClass().getDeclaredFields()).stream().forEach(LambdaUtil.wrapException( e -> {
-            JestQueryField annotation = e.getAnnotation(JestQueryField.class);
-            if (nonNull(annotation)){
-                e.setAccessible(true);
-                boolQueryBuilder.filter(QueryBuilders.termQuery(e.getName(), buildQueryFieldVal(e.get(qryObj))));
-            }
-        }));
+        List<String> fuzzyFields = buildFuzzyFields(clazz,qryObj);
+        boolQueryBuilder.must(QueryBuilders.multiMatchQuery(qryObj.getQuery(), fuzzyFields.toArray(new String[]{})).type(PHRASE));
+        fillExactFields(boolQueryBuilder,clazz, qryObj);
         searchSourceBuilder.query(boolQueryBuilder);
         return searchSourceBuilder;
     }
+    private <T extends BaseElasticSearchEntity> void fillExactFields(BoolQueryBuilder queryBuilder,Class<T> clazz, T qryObj) throws Exception {
+        asList(clazz.getDeclaredFields()).stream().forEach(LambdaUtil.wrapException(e -> {
+            e.setAccessible(true);
+            JestExactQueryField annotation = e.getAnnotation(JestExactQueryField.class);
+            if (nonNull(annotation) && nonNull(e.get(qryObj))){
+                queryBuilder.must(QueryBuilders.matchQuery(e.getName(), e.get(qryObj)).operator(AND));
+            }
+        }));
+    }
+
+    private <T extends BaseElasticSearchEntity> List<String> buildFuzzyFields(Class<T> clazz, T qryObj) throws Exception {
+        ArrayList<String> fuzzyFields = new ArrayList<>();
+        asList(clazz.getDeclaredFields()).stream().forEach(LambdaUtil.wrapException(e -> {
+            JestFuzzyQueryField annotation = e.getAnnotation(JestFuzzyQueryField.class);
+            if (nonNull(annotation)){
+                fuzzyFields.add(e.getName());
+            }
+        }));
+        return fuzzyFields;
+    }
+
+
     private String buildQueryFieldVal(Object object) {
         return object.toString();
     }

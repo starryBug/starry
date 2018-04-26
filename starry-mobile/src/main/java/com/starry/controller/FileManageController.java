@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -43,15 +44,13 @@ public class FileManageController{
     public Mono<String> upload(MultipartFile attach) {
         try {
             String path = fastDFSClientWrapper.uploadFile(attach);
-//            UserFile userFile = new UserFile().setFileName(attach.getOriginalFilename()).setFileSize(attach.getSize() / 1024.00).setId((long) 1).setUrl(path);
-//            userFileJPA.save(userFile);
             UserFile userFile = new UserFile();
             userFile.setFileName(attach.getOriginalFilename());
             userFile.setFileSize(attach.getSize() / 1024.00);
             userFile.setUrl(path);
             userFileService.saveUserFile(userFile);
         }catch (Exception e){
-//            log.error("上传文件出错：" + ExceptionUtils.getMessage(e));
+            log.error("上传文件出错：" + ExceptionUtils.getMessage(e));
         }finally {
             return Mono.just("SUCCESS");
         }
@@ -61,10 +60,15 @@ public class FileManageController{
      */
     @RequestMapping(value = "/es/list", method = RequestMethod.GET)
     @ResponseBody
-    public Mono<List> findFileList() {
+    public Mono<List> findFileList(HttpServletRequest request) {
         List<UserFile> list = null;
         try {
-            list = userFileService.findByFileName("支付过期设置代码.png");
+//            list = userFileService.findByKey(request.getParameter("key"));
+            UserFile userFile = new UserFile(){{
+                setQuery(request.getParameter("key"));
+                setUrl(request.getParameter("url"));
+            }};
+            list = userFileService.findByUserFile(userFile);
         }catch (Exception e){
             list = Collections.emptyList();
         }

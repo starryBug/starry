@@ -1,18 +1,26 @@
 package com.starry.elasticsearch.domain;
 
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 import java.io.Serializable;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
-
+@Data
+@Accessors(chain = true)
 public abstract class BaseElasticSearchEntity implements Serializable {
     /**
      * 类似数据库
      */
-    protected String elasticIndexName;
+    protected transient String elasticIndexName;
     /**
      * 类似数据库中的表
      */
-    protected String elasticTypeName;
+    protected transient String elasticTypeName;
+    /**
+     * 查询关键字
+     */
+    public transient String query;
 
     public void setElasticIndexName(String elasticIndexName) {
         this.elasticIndexName = elasticIndexName;

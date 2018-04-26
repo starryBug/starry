@@ -9,5 +9,6 @@ import java.util.List;
  */
 public interface IUserFileService {
     void saveUserFile(UserFile userFile);
-    List<UserFile> findByFileName(String fileName);
+    List<UserFile> findByKey(String qryKey);
+    List<UserFile> findByUserFile(UserFile userFile);
 }
