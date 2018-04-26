@@ -226,7 +226,7 @@ public class JestService {
     private <T extends BaseElasticSearchEntity> SearchSourceBuilder buildSearch(Class<T> clazz, T qryObj) throws Exception{
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        List<String> fuzzyFields = buildFuzzyFields(clazz,qryObj);
+        List<String> fuzzyFields = buildFuzzyFields(clazz);
         boolQueryBuilder.must(QueryBuilders.multiMatchQuery(qryObj.getQuery(), fuzzyFields.toArray(new String[]{})).type(PHRASE));
         fillExactFields(boolQueryBuilder,clazz, qryObj);
         searchSourceBuilder.query(boolQueryBuilder);
@@ -242,7 +242,7 @@ public class JestService {
         }));
     }
 
-    private <T extends BaseElasticSearchEntity> List<String> buildFuzzyFields(Class<T> clazz, T qryObj) throws Exception {
+    private <T extends BaseElasticSearchEntity> List<String> buildFuzzyFields(Class<T> clazz) throws Exception {
         ArrayList<String> fuzzyFields = new ArrayList<>();
         asList(clazz.getDeclaredFields()).stream().forEach(LambdaUtil.wrapException(e -> {
             JestFuzzyQueryField annotation = e.getAnnotation(JestFuzzyQueryField.class);
