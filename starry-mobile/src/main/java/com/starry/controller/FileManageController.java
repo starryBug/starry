@@ -2,6 +2,7 @@ package com.starry.controller;
 
 import com.starry.domain.entity.UserFile;
 import com.starry.domain.jpa.UserFileJPA;
+import com.starry.service.JestService;
 import com.starry.service.interf.IUserFileService;
 import com.starry.util.FastDFSClientWrapper;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 
@@ -36,6 +38,8 @@ public class FileManageController{
     private UserFileJPA userFileJPA;
     @Autowired
     private IUserFileService userFileService;
+    @Autowired
+    private JestService jestService;
 
     /**
      * 上传文件
@@ -45,9 +49,10 @@ public class FileManageController{
         try {
             String path = fastDFSClientWrapper.uploadFile(attach);
             UserFile userFile = new UserFile();
-            userFile.setFileName(attach.getOriginalFilename());
-            userFile.setFileSize(attach.getSize() / 1024.00);
-            userFile.setUrl(path);
+            userFile.setFileName(attach.getOriginalFilename())
+                    .setFileSize(attach.getSize() / 1024.00)
+                    .setUrl(path)
+                    .setCreateTime(new Date());
             userFileService.saveUserFile(userFile);
         }catch (Exception e){
             log.error("上传文件出错：" + ExceptionUtils.getMessage(e));
@@ -67,6 +72,7 @@ public class FileManageController{
             UserFile userFile = new UserFile(){{
                 setQuery(request.getParameter("key"));
                 setUrl(request.getParameter("url"));
+                setFileSizeSort(request.getParameter("orderBy"));
             }};
             list = userFileService.findByUserFile(userFile);
         }catch (Exception e){
@@ -87,6 +93,14 @@ public class FileManageController{
     @RequestMapping(value = "/test")
     @ResponseBody
     public Mono<String> test() {
+        return Mono.just("SUCCESS");
+    }
+
+    @RequestMapping(value = "/index/delete/{id}")
+    @ResponseBody
+    public Mono<String> deleteIdx(@PathVariable("id") String id) throws Exception{
+        UserFile userFile = new UserFile();
+        jestService.delete(userFile.getElasticIndexName(), userFile.getElasticTypeName(), id);
         return Mono.just("SUCCESS");
     }
 }

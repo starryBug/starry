@@ -2,6 +2,7 @@ package com.starry.domain.entity;
 
 import com.starry.elasticsearch.annotation.JestExactQueryField;
 import com.starry.elasticsearch.annotation.JestFuzzyQueryField;
+import com.starry.elasticsearch.annotation.JestOrderByField;
 import com.starry.elasticsearch.domain.BaseElasticSearchEntity;
 import io.searchbox.annotations.JestId;
 import lombok.Data;
@@ -12,7 +13,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @Accessors(chain = true)
@@ -34,5 +37,10 @@ public class UserFile extends BaseElasticSearchEntity implements Serializable{
     private String fileName;
     @Column(name = "file_size")
     private Double fileSize;
+    @Column(name = "create_time")
+    private Date createTime;
+    @Transient
+    @JestOrderByField
+    private String fileSizeSort;
 
 }

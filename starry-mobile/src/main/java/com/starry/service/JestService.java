@@ -2,8 +2,8 @@ package com.starry.service;
 
 import com.starry.elasticsearch.annotation.JestExactQueryField;
 import com.starry.elasticsearch.annotation.JestFuzzyQueryField;
+import com.starry.elasticsearch.annotation.JestOrderByField;
 import com.starry.elasticsearch.domain.BaseElasticSearchEntity;
-import com.starry.util.LambdaUtil;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
 import io.searchbox.core.Bulk;
@@ -21,20 +21,24 @@ import io.searchbox.indices.DeleteIndex;
 import io.searchbox.indices.mapping.GetMapping;
 import io.searchbox.indices.mapping.PutMapping;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.starry.util.LambdaUtil.wrapException;
 import static java.util.Arrays.asList;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 import static org.elasticsearch.index.query.MultiMatchQueryBuilder.Type.PHRASE;
 import static org.elasticsearch.index.query.Operator.AND;
+import static org.elasticsearch.search.sort.SortBuilders.fieldSort;
+import static org.elasticsearch.search.sort.SortMode.fromString;
 
 //@Slf4j
 @Component
@@ -230,10 +234,22 @@ public class JestService {
         boolQueryBuilder.must(QueryBuilders.multiMatchQuery(qryObj.getQuery(), fuzzyFields.toArray(new String[]{})).type(PHRASE));
         fillExactFields(boolQueryBuilder,clazz, qryObj);
         searchSourceBuilder.query(boolQueryBuilder);
+        buildFieldSortBuilder(searchSourceBuilder, clazz, qryObj);
         return searchSourceBuilder;
     }
+    private <T extends BaseElasticSearchEntity> void buildFieldSortBuilder(SearchSourceBuilder searchSourceBuilder,Class<T> clazz, T qryObj) throws Exception {
+        List<FieldSortBuilder> fieldSortBuilderList = new ArrayList<>();
+        asList(clazz.getDeclaredFields()).stream().forEach(wrapException(e -> {
+            e.setAccessible(true);
+            JestOrderByField annotation = e.getAnnotation(JestOrderByField.class);
+            if (nonNull(annotation) && nonNull(e.get(qryObj))){
+                fieldSortBuilderList.add(fieldSort(e.getName().substring(0, e.getName().lastIndexOf("Sort"))).order(SortOrder.fromString(e.get(qryObj).toString())));
+            }
+        }));
+        if (isNotEmpty(fieldSortBuilderList)) searchSourceBuilder.sort(fieldSortBuilderList.get(0));
+    }
     private <T extends BaseElasticSearchEntity> void fillExactFields(BoolQueryBuilder queryBuilder,Class<T> clazz, T qryObj) throws Exception {
-        asList(clazz.getDeclaredFields()).stream().forEach(LambdaUtil.wrapException(e -> {
+        asList(clazz.getDeclaredFields()).stream().forEach(wrapException(e -> {
             e.setAccessible(true);
             JestExactQueryField annotation = e.getAnnotation(JestExactQueryField.class);
             if (nonNull(annotation) && nonNull(e.get(qryObj))){
@@ -244,7 +260,7 @@ public class JestService {
 
     private <T extends BaseElasticSearchEntity> List<String> buildFuzzyFields(Class<T> clazz) throws Exception {
         ArrayList<String> fuzzyFields = new ArrayList<>();
-        asList(clazz.getDeclaredFields()).stream().forEach(LambdaUtil.wrapException(e -> {
+        asList(clazz.getDeclaredFields()).stream().forEach(wrapException(e -> {
             JestFuzzyQueryField annotation = e.getAnnotation(JestFuzzyQueryField.class);
             if (nonNull(annotation)){
                 fuzzyFields.add(e.getName());
